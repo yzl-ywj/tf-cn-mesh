@@ -30,7 +30,7 @@ resource "azurerm_service_plan" "plan" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  os_type  = "Linux" # 👈 关键：Linux 才能跑 Docker / Node
+  os_type  = "Linux" # 👈 关键：Linux 才能跑 Docker / Node 
   sku_name = "B1"    # 👈 关键：定价层（钱和性能）学习/个人 cheapest 可跑 Docker,free tier不能自定义域名，不能跑 Docker 镜像
 }
 
