@@ -1,9 +1,9 @@
 # 指定 Provider (插件)
 terraform {
   required_providers {
-    azurerm={
-        source = "hashicorp/azurerm"
-        version = "~>4.0"
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~>4.0"
     }
   }
 }
@@ -12,10 +12,10 @@ terraform {
 provider "azurerm" {
   features {}
 
-  subscription_id = "50f908b5-b2a4-49ac-b74e-1d25c65a496a"
-  client_id = "9ad3d96d-0e71-4cd0-b3b4-f6d9614a0431"
-  client_secret = "~FG8Q~eNzHcow9mSTyMwEmRQ3QhSVFbQaV1Q3bvt"
-  tenant_id = "af219abf-b9e2-49bd-8b94-6e1572a084e0"
+  subscription_id = var.subscription_id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  tenant_id       = var.tenant_id
 }
 
 # 创建资源组
@@ -30,8 +30,8 @@ resource "azurerm_service_plan" "plan" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  os_type             = "Linux"    # 👈 关键：Linux 才能跑 Docker / Node
-  sku_name            = "B1"        # 👈 关键：定价层（钱和性能）学习/个人 cheapest 可跑 Docker,free tier不能自定义域名，不能跑 Docker 镜像
+  os_type  = "Linux" # 👈 关键：Linux 才能跑 Docker / Node
+  sku_name = "B1"    # 👈 关键：定价层（钱和性能）学习/个人 cheapest 可跑 Docker,free tier不能自定义域名，不能跑 Docker 镜像
 }
 
 resource "azurerm_linux_web_app" "app" {
@@ -39,13 +39,13 @@ resource "azurerm_linux_web_app" "app" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.plan.id
-  
+
   site_config {
     application_stack {
-      docker_image_name   = "ghcr.io/yzl-ywj/live-stream-nodejs-app:latest"
-      docker_registry_url = "https://ghcr.io"
-      docker_registry_username = "yzl-ywj"
-      docker_registry_password = "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"
+      docker_image_name        = var.docker_image_name
+      docker_registry_url      = var.docker_registry_url
+      docker_registry_username = var.docker_registry_username
+      docker_registry_password = var.docker_registry_password
     }
   }
 

@@ -1,0 +1,9 @@
+# Example terraform.tfvars (DO NOT COMMIT real secrets)
+# Copy to terraform.tfvars and fill in values locally or provide via CI secrets.
+
+subscription_id = "REPLACE_WITH_SUBSCRIPTION_ID"
+client_id       = "REPLACE_WITH_CLIENT_ID"
+client_secret   = "REPLACE_WITH_CLIENT_SECRET"
+tenant_id       = "REPLACE_WITH_TENANT_ID"
+
+docker_registry_password = "REPLACE_WITH_DOCKER_PASSWORD"
