@@ -6,6 +6,13 @@ terraform {
       version = "~>4.0"
     }
   }
+
+  backend "azurerm" {
+    resource_group_name  = "rg-terraform-demo"
+    storage_account_name = "tfstate20260601"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
+  }
 }
 
 # 配置 Azure Provider 使用刚才创建的 SP 鉴权
@@ -20,7 +27,7 @@ provider "azurerm" {
 
 # 创建资源组
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-terraform-demo"
+  name     = var.resource_group_name
   location = "East Asia"
 }
 
@@ -50,4 +57,12 @@ resource "azurerm_linux_web_app" "app" {
   }
 
   # 私有镜像认证已移入 `site_config.application_stack`
+}
+
+resource "azurerm_storage_account" "storage" {
+  name                     = "tfstate20260601"
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
 }

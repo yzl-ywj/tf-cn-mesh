@@ -74,3 +74,9 @@ variable "tenant_id" {
   type        = string
   default     = ""
 }
+
+variable "resource_group_name" {
+  description = "Azure resource group name"
+  type        = string
+  default     = "rg-terraform-demo"
+}
