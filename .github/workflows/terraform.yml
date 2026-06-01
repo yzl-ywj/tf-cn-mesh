@@ -2,6 +2,11 @@ name: Terraform CI
 
 on:
   workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Run terraform apply after plan'
+        required: false
+        default: 'false'
   push:
     branches: [ "main", "master" ]
   pull_request:
@@ -48,7 +53,7 @@ jobs:
 
       - name: Azure Login
         if: ${{ steps.creds.outputs.has_creds == 'true' }}
-        uses: azure/login@v1
+        uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Terraform Init
@@ -69,8 +74,9 @@ jobs:
   apply:
     name: Terraform Apply (optional)
     runs-on: ubuntu-latest
+    environment: production
     needs: plan
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true' }}
     steps:
       - uses: actions/checkout@v6
       - name: Setup Terraform
@@ -88,7 +94,7 @@ jobs:
 
       - name: Azure Login
         if: ${{ steps.creds.outputs.has_creds == 'true' }}
-        uses: azure/login@v1
+        uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Download tfplan
