@@ -19,10 +19,13 @@ jobs:
         uses: hashicorp/setup-terraform@v2
       - name: Terraform fmt
         run: terraform fmt -check -recursive
+        working-directory: terraform-azure-demo
       - name: Terraform init
         run: terraform init -backend=false
+        working-directory: terraform-azure-demo
       - name: Terraform validate
         run: terraform validate
+        working-directory: terraform-azure-demo
 
   plan:
     name: Terraform Plan (optional)
@@ -51,15 +54,17 @@ jobs:
       - name: Terraform Init
         if: ${{ steps.creds.outputs.has_creds == 'true' }}
         run: terraform init
+        working-directory: terraform-azure-demo
       - name: Terraform Plan
         if: ${{ steps.creds.outputs.has_creds == 'true' }}
         run: terraform plan -out=tfplan
+        working-directory: terraform-azure-demo
       - name: Upload tfplan
         if: ${{ steps.creds.outputs.has_creds == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: tfplan
+          path: terraform-azure-demo/tfplan
 
   apply:
     name: Terraform Apply (optional)
@@ -91,6 +96,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: tfplan
+          path: terraform-azure-demo
       - name: Terraform Apply
         if: ${{ steps.creds.outputs.has_creds == 'true' }}
         run: terraform apply tfplan
+        working-directory: terraform-azure-demo
