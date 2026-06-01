@@ -97,12 +97,23 @@ jobs:
         uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Cache Terraform providers
+        uses: actions/cache@v4
+        with:
+          path: terraform-azure-demo/.terraform
+          key: ${{ runner.os }}-terraform-${{ hashFiles('terraform-azure-demo/.terraform.lock.hcl') }}
+
       - name: Download tfplan
         if: ${{ steps.creds.outputs.has_creds == 'true' }}
         uses: actions/download-artifact@v4
         with:
           name: tfplan
           path: terraform-azure-demo
+          
+      - name: Terraform Init
+        if: ${{ steps.creds.outputs.has_creds == 'true' }}
+        run: terraform init
+        working-directory: terraform-azure-demo
       - name: Terraform Apply
         if: ${{ steps.creds.outputs.has_creds == 'true' }}
         run: terraform apply tfplan
