@@ -26,9 +26,7 @@ jobs:
     name: Terraform Plan (optional)
     runs-on: ubuntu-latest
     needs: validate
-    if: ${{ env.AZURE_CREDENTIALS != '' }}
-    env:
-      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+    if: ${{ secrets.AZURE_CREDENTIALS != '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Terraform
@@ -51,9 +49,7 @@ jobs:
     name: Terraform Apply (optional)
     runs-on: ubuntu-latest
     needs: plan
-    if: ${{ env.AZURE_CREDENTIALS != '' && github.event_name == 'workflow_dispatch' }}
-    env:
-      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+    if: ${{ secrets.AZURE_CREDENTIALS != '' && github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Terraform
