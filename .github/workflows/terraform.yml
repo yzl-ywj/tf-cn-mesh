@@ -36,6 +36,7 @@ jobs:
     name: Terraform Plan (optional)
     runs-on: ubuntu-latest
     needs: validate
+    environment: production
     permissions:
       id-token: write
       contents: read
