@@ -51,26 +51,26 @@ variable "docker_registry_password" {
 }
 
 variable "subscription_id" {
-  description = "Azure subscription id (optional, can also be provided via provider or env)"
+  description = "Azure subscription id. Required for both SP and OIDC authentication (can also be provided via ARM_SUBSCRIPTION_ID environment variable)"
   type        = string
   default     = ""
 }
 
 variable "client_id" {
-  description = "Azure service principal client id"
+  description = "Azure service principal client id (App ID). Required for both SP and OIDC authentication"
   type        = string
   default     = ""
 }
 
 variable "client_secret" {
-  description = "Azure service principal client secret (sensitive)"
+  description = "Azure service principal client secret (sensitive). Required for traditional SP authentication; leave empty when using OIDC with use_oidc = true"
   type        = string
   sensitive   = true
   default     = ""
 }
 
 variable "tenant_id" {
-  description = "Azure tenant id"
+  description = "Azure tenant id (Directory ID). Required for both SP and OIDC authentication"
   type        = string
   default     = ""
 }

@@ -196,3 +196,32 @@ az ad sp create-for-rbac \
 ---
 
 需要我把 `main.tf` 完整改为使用 `variables.tf`（并填充示例 `terraform.tfvars`）、或用 OIDC 替代 Service Principal 配置 GitHub Actions 吗？
+
+## ✅ OIDC 配置已完成
+
+已成功配置 OpenID Connect (OIDC) 作为更安全的身份验证方案：
+
+### 已完成的项目：
+1. **GitHub Actions 工作流更新**：`.github/workflows/terraform.yml` 现在使用 OIDC 登录
+2. **Terraform Provider 配置**：`main.tf` 中的 `azurerm` provider 已启用 `use_oidc = true`
+3. **变量文档更新**：`variables.tf` 中的变量描述已更新，说明 OIDC 用法
+4. **配置指南创建**：`OIDC_SETUP.md` 提供了完整的 Azure AD 配置步骤
+
+### 后续步骤：
+1. **创建 Azure AD 应用注册**：按照 `OIDC_SETUP.md` 中的步骤操作
+2. **配置 GitHub Secrets**：设置 `AZURE_CLIENT_ID`、`AZURE_TENANT_ID`、`AZURE_SUBSCRIPTION_ID`
+3. **测试工作流**：手动触发 GitHub Actions 验证 OIDC 认证
+
+### 优势：
+- ✅ 无需长期保存 `client_secret`
+- ✅ 短期令牌（每次运行自动获取）
+- ✅ 更好的安全性和审计追踪
+- ✅ 遵循 Azure 和 GitHub 最佳实践
+
+### 传统认证（回滚）：
+如果需要恢复使用服务主体认证，请：
+1. 从 `main.tf` 中移除 `use_oidc = true`
+2. 设置 `client_secret` 变量值
+3. 恢复使用 `AZURE_CREDENTIALS` Secret
+
+> **注意**：OIDC 配置需要 Azure AD 应用注册和联合身份凭证设置。详细步骤请参考 `OIDC_SETUP.md`。

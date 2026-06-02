@@ -15,7 +15,11 @@ terraform {
   }
 }
 
-# 配置 Azure Provider 使用刚才创建的 SP 鉴权
+# 配置 Azure Provider 身份验证
+# 两种方案（二选一）：
+# 1. 使用 OIDC（推荐）：设置 use_oidc = true 并确保 client_id、tenant_id、subscription_id 已提供
+#    client_secret 可留空。需要 GitHub Actions 配置 Azure Login with OIDC。
+# 2. 使用传统服务主体：设置 use_oidc = false（或删除此行）并提供 client_secret。
 provider "azurerm" {
   features {}
 
@@ -23,6 +27,7 @@ provider "azurerm" {
   client_id       = var.client_id
   client_secret   = var.client_secret
   tenant_id       = var.tenant_id
+  use_oidc        = true # 👈 关键：启用 OIDC 鉴权，配合 GitHub Actions 的 Azure Login Action 使用
 }
 
 # 创建资源组
