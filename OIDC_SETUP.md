@@ -82,17 +82,42 @@ provider "azurerm" {
 }
 ```
 
-### 7. 验证 GitHub Actions 工作流
-工作流文件 `.github/workflows/terraform.yml` 应包含：
+### 7. 配置 GitHub Actions 工作流权限
+OIDC 身份验证需要作业级别的 `id-token: write` 权限。确保工作流文件包含以下配置：
+
+#### 对于使用 OIDC 的作业（plan 和 apply）：
 ```yaml
-- name: Azure Login (OIDC)
-  uses: azure/login@v3
-  with:
-    client-id: ${{ secrets.AZURE_CLIENT_ID }}
-    tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-    subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    enable-OIDC: true
+plan:
+  name: Terraform Plan (optional)
+  runs-on: ubuntu-latest
+  needs: validate
+  permissions:
+    id-token: write    # 必需：用于获取 OIDC 令牌
+    contents: read     # 必需：用于 actions/checkout
+  steps:
+    # ... 其他步骤
+
+    - name: Azure Login (OIDC)
+      uses: azure/login@v3
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        enable-OIDC: true
+        auth-type: OIDC
+        audience: api://AzureADTokenExchange
+        environment: azurecloud
+        allow-no-subscriptions: false
+        enable-AzPSSession: false
 ```
+
+#### 关键配置说明：
+- **permissions**: 必须包含 `id-token: write` 以获取 GitHub OIDC 令牌
+- **auth-type**: 必须设置为 `OIDC`（当 `enable-OIDC: true` 时默认）
+- **audience**: 应为 `api://AzureADTokenExchange`（Azure AD 的默认值）
+- **environment**: Azure 云环境（默认为 `azurecloud`）
+
+> **注意**：`validate` 作业不需要 OIDC 权限，因为它不进行 Azure 身份验证。
 
 ## 验证 OIDC 配置
 

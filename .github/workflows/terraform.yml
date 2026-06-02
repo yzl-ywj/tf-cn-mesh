@@ -36,6 +36,9 @@ jobs:
     name: Terraform Plan (optional)
     runs-on: ubuntu-latest
     needs: validate
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v6
       - name: Setup Terraform
@@ -63,6 +66,11 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-OIDC: true
+          auth-type: OIDC
+          audience: api://AzureADTokenExchange
+          environment: azurecloud
+          allow-no-subscriptions: false
+          enable-AzPSSession: false
       - name: Terraform Init
         if: ${{ steps.check_oidc.outputs.has_creds == 'true' }}
         run: terraform init
@@ -84,6 +92,9 @@ jobs:
     environment: production
     needs: plan
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.apply == 'true' }}
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v6
       - name: Setup Terraform
@@ -111,6 +122,11 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-OIDC: true
+          auth-type: OIDC
+          audience: api://AzureADTokenExchange
+          environment: azurecloud
+          allow-no-subscriptions: false
+          enable-AzPSSession: false
       - name: Cache Terraform providers
         uses: actions/cache@v4
         with:
