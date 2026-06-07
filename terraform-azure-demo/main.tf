@@ -38,7 +38,7 @@ resource "azurerm_resource_group" "rg" {
 
 # 创建容器注册表（Azure Container Registry）以存储 Docker 镜像
 resource "azurerm_container_registry" "acr" {
-  name    = "tfacr20260601"
+  name                = "tfacr20260601"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Standard"
@@ -72,7 +72,7 @@ resource "azurerm_linux_web_app" "app" {
   }
 
   app_settings = {
-     # 启用系统内置的 Docker CI Webhook：ACR 有新镜像推入时，自动通知 App Service 拉取
+    # 启用系统内置的 Docker CI Webhook：ACR 有新镜像推入时，自动通知 App Service 拉取
     "DOCKER_ENABLE_CI" = "true"
     "WEBSITES_PORT"    = "3000" # 告知 App Service 容器内部端口
   }
