@@ -28,7 +28,7 @@ variable "app_name" {
 variable "docker_image_name" {
   description = "Docker image including tag"
   type        = string
-  default     = "yzl-ywj/live-stream-nodejs-app:latest"
+  default     = "live-stream-nodejs-app:latest"
 }
 
 variable "docker_registry_url" {
