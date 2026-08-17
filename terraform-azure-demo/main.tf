@@ -9,25 +9,25 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "rg-terraform-demo"
-    storage_account_name = "tfstate20260601"
+    storage_account_name = "tfstate20260817"
     container_name       = "tfstate"
     key                  = "terraform.tfstate"
   }
 }
 
 # 配置 Azure Provider 身份验证
-# 两种方案（二选一）：
-# 1. 使用 OIDC（推荐）：设置 use_oidc = true 并确保 client_id、tenant_id、subscription_id 已提供
-#    client_secret 可留空。需要 GitHub Actions 配置 Azure Login with OIDC。
-# 2. 使用传统服务主体：设置 use_oidc = false（或删除此行）并提供 client_secret。
+# 三种方案（选择其一）：
+# 1. 本地开发（推荐）：client_secret 留空、use_oidc = false → 自动使用 `az login` 的 Azure CLI 凭据
+# 2. GitHub Actions + OIDC（推荐 CI）：use_oidc = true、client_secret 留空 → 配合 Azure Login Action
+# 3. 传统服务主体：use_oidc = false 并提供有效的 client_secret
 provider "azurerm" {
   features {}
 
   subscription_id = var.subscription_id
   client_id       = var.client_id
-  client_secret   = var.client_secret
+  client_secret   = var.client_secret # OIDC/CLI 鉴权时留空
   tenant_id       = var.tenant_id
-  use_oidc        = true # 👈 关键：启用 OIDC 鉴权，配合 GitHub Actions 的 Azure Login Action 使用
+  use_oidc        = var.use_oidc # 本地 false（走 az login），CI true（走 OIDC）
 }
 
 # 创建资源组
@@ -65,7 +65,7 @@ resource "azurerm_linux_web_app" "app" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                     = "tfstate20260601"
+  name                     = "tfstate20260817"
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = azurerm_resource_group.rg.location
   account_tier             = "Standard"

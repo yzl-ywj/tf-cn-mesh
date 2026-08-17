@@ -18,6 +18,40 @@ az login
 az account set --subscription <SUBSCRIPTION_ID>
 ```
 
+### Azure CLI 登录方式
+
+**1. 浏览器登录（默认方式）**
+
+```bash
+az login --tenant <TENANT_ID>
+```
+
+不带额外参数时，Azure CLI 会自动打开系统默认浏览器完成登录。`--tenant` 用于指定目标租户（多租户场景下确保登录到拥有目标订阅的目录）
+
+**2. Authorization Code 流程（设备代码登录）**
+
+适用于：浏览器无法自动弹出、远程 SSH 会话、或需要在**另一台设备**上完成登录的场景。
+
+```bash
+az login --tenant <TENANT_ID> --use-device-code
+```
+
+执行后终端会显示类似提示：
+
+```
+To sign in, use a web browser to open the page https://microsoft.com/devicelogin
+and enter the code XXXXXXXX to authenticate.
+```
+
+在任意设备的浏览器打开该 URL、输入代码、选择目标账户完成登录，终端会自动继续。
+
+> **提示**：新版 Azure CLI 在 Windows 上默认使用 WAM（Web Account Manager）弹出账户选择器。如需强制走浏览器，可先禁用 WAM：
+>
+> ```bash
+> az config set core.enable_broker_on_windows=false
+> az login --tenant <TENANT_ID>
+> ```
+
 ### 项目结构建议
 
 ```
@@ -224,4 +258,4 @@ az ad sp create-for-rbac \
 2. 设置 `client_secret` 变量值
 3. 恢复使用 `AZURE_CREDENTIALS` Secret
 
-> **注意**：OIDC 配置需要 Azure AD 应用注册和联合身份凭证设置。详细步骤请参考 `OIDC_SETUP.md`。
+> **注意**：OIDC 配置需要 Azure AD 应用注册和联合身份凭证设置。详细步骤请参考 `OIDC_SETUP.md`

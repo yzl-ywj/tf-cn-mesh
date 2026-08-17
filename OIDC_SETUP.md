@@ -127,7 +127,7 @@ plan:
 3. 观察工作流执行，确认 **Azure Login (OIDC)** 步骤成功
 
 ### 2. 检查 Azure AD 登录日志
-1. 在 Azure 门户中，导航到 **Azure Active Directory** → **应用注册** → 选择你的应用
+1. 在 Azure 门户中，导航到 **Azure Active Directory**
 2. 转到 **监视** → **登录日志**
 3. 筛选 **应用程序** 为你的应用注册名称
 4. 确认看到来自 `GitHub Actions` 的成功登录

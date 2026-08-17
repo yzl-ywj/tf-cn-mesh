@@ -69,6 +69,12 @@ variable "client_secret" {
   default     = ""
 }
 
+variable "use_oidc" {
+  description = "Use OIDC authentication (for GitHub Actions). Set to false locally to use Azure CLI credentials from `az login`"
+  type        = bool
+  default     = false
+}
+
 variable "tenant_id" {
   description = "Azure tenant id (Directory ID). Required for both SP and OIDC authentication"
   type        = string
