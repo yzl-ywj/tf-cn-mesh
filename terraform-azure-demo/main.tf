@@ -36,6 +36,15 @@ resource "azurerm_resource_group" "rg" {
   location = "East Asia"
 }
 
+# 创建容器注册表（Azure Container Registry）以存储 Docker 镜像
+resource "azurerm_container_registry" "acr" {
+  name                = "tfacr20260601"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "Standard"
+  admin_enabled       = true # 开启管理员通道以支持 Webhook 凭据调用
+}
+
 # 创建服务计划（App Service Plan）
 resource "azurerm_service_plan" "plan" {
   name                = "azure-app-service-plan"
@@ -53,12 +62,19 @@ resource "azurerm_linux_web_app" "app" {
   service_plan_id     = azurerm_service_plan.plan.id
 
   site_config {
+    always_on = true # 保持应用始终运行，适合直播流等长连接场景
     application_stack {
       docker_image_name        = var.docker_image_name
-      docker_registry_url      = var.docker_registry_url
-      docker_registry_username = var.docker_registry_username
-      docker_registry_password = var.docker_registry_password
+      docker_registry_url      = "https://${azurerm_container_registry.acr.login_server}"
+      docker_registry_username = azurerm_container_registry.acr.admin_username
+      docker_registry_password = azurerm_container_registry.acr.admin_password
     }
+  }
+
+  app_settings = {
+    # 启用系统内置的 Docker CI Webhook：ACR 有新镜像推入时，自动通知 App Service 拉取
+    "DOCKER_ENABLE_CI" = "true"
+    "WEBSITES_PORT"    = "3000" # 告知 App Service 容器内部端口
   }
 
   # 私有镜像认证已移入 `site_config.application_stack`
